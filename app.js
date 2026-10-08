@@ -131,11 +131,9 @@ function deleteButton(table, id, reload) {
 }
 
 // Ta bort genom att högerklicka (eller hålla ned på mobil).
-// Samma logik oavsett om man äger raden eller inte (bra för matmenyn som alla kan redigera)
-function enableContextDelete(element, table, id, reload, ownerId = null) {
-    // Om ownerId skickas med (t.ex. för utgifter/schema), kolla att det är rätt användare.
-    // Skickas det inte med (t.ex. för matmeny), tillåt radering för alla inloggade.
-    if (ownerId && (!currentUser || ownerId !== currentUser.id)) return;
+// Funkar bara om den inloggade äger raden (ownerId).
+function enableContextDelete(element, table, id, reload, ownerId) {
+    if (!currentUser || ownerId !== currentUser.id) return;
 
     element.classList.add("deletable");
     element.title = "Högerklicka (eller håll ned) för att ta bort";
@@ -210,6 +208,31 @@ function buildWeekGrid(container, items, renderItem) {
     }
 }
 
+// ========================================
+// REALTID (LYSSNA PÅ DATABASEN)
+// ========================================
+
+function setupRealtime() {
+    sb.channel('hushall-kanal')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'Inköpslista' }, () => {
+            loadShoppingList();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'Schema' }, () => {
+            loadSchedule();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'Matmeny' }, () => {
+            loadMeals();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'Utgifter' }, () => {
+            loadExpenses();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'Betalningar' }, () => {
+            loadExpenses(); // Balance uppdateras också här
+        })
+        .subscribe((status) => {
+            if (status === 'SUBSCRIBED') console.log('Realtid aktiverad!');
+        });
+}
 
 // ========================================
 // STARTA APPEN
@@ -228,7 +251,7 @@ async function init() {
         await loadProfile();
         showApp();
         await loadAllData();
-        // setupRealtime(); // Avkommentera om du lade in setupRealtime()-funktionen
+        setupRealtime();
     } else {
         showLogin();
     }
@@ -254,7 +277,7 @@ async function login(email, password) {
     await loadProfile();
     showApp();
     await loadAllData();
-    // setupRealtime(); // Avkommentera om du lade in setupRealtime()-funktionen
+    setupRealtime();
 }
 
 async function logout() {
@@ -515,10 +538,8 @@ async function loadMeals() {
     buildWeekGrid(container, data, item => {
         const div = el("div", null, "entry");
         div.appendChild(el("strong", item.meal));
-        
-        // Ändrad till enableContextDelete istället för deleteButton
-        enableContextDelete(div, "Matmeny", item.id, loadMeals);
-        
+        enableContextDelete(div, "Matmeny", item.id, loadMeals, item.created_by);
+        container.appendChild(div);
         return div;
     });
 }
@@ -533,7 +554,8 @@ async function addMeal() {
         .from("Matmeny")
         .insert({
             date: date,
-            meal: meal
+            meal: meal,
+            created_by: currentProfile.id
         });
 
     if (error) {
@@ -636,9 +658,7 @@ async function showSwishQr(container, number, amount) {
 
 async function settleDebt(fromId, toId, amount, details) {
     const text = amount > 0
-        ? `Markera att ${profileNames[fromId]} har betalat ${money(amount)} till ${profileNames[toId]}?
-
-Utgifterna nollställs och sparas bara i historiken.`
+        ? `Markera att ${profileNames[fromId]} har betalat ${money(amount)} till ${profileNames[toId]}?\n\nUtgifterna nollställs och sparas bara i historiken.`
         : "Nollställa utgifterna? De sparas bara i historiken.";
     if (!confirm(text)) return;
 
@@ -668,9 +688,7 @@ Utgifterna nollställs och sparas bara i historiken.`
         // Ångra betalningen så att inget blir halvt
         await sb.from("Betalningar").delete().eq("id", payment.id);
         alert("Kunde inte nollställa utgifterna. Kontrollera att kolumnen settled_in finns i Utgifter och att tabellen har en UPDATE-policy." +
-            (updateError ? "
-
-" + updateError.message : ""));
+            (updateError ? "\n\n" + updateError.message : ""));
         return;
     }
 
@@ -783,8 +801,7 @@ function renderBalance(expenses, settlements) {
             if (bOwesA.items.length) {
                 detailLines.push(`${profileNames[b]} är skyldig ${profileNames[a]} (${money(bOwesA.sum)}): ` + bOwesA.items.join(", "));
             }
-            const detailText = detailLines.join("
-");
+            const detailText = detailLines.join("\n");
 
             // Positivt = a är skyldig b
             const net = Math.round((aOwesB.sum - bOwesA.sum) * 100) / 100;
