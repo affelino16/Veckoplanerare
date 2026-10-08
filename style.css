@@ -1,0 +1,243 @@
+/* style-v2.css */
+:root {
+    /* Mörka bakgrunder */
+    --bg-color: #121212;
+    --bg-offset: #1e1e24;
+    --bg-highlight: #2b2b36;
+    
+    /* Ljus text för dark mode */
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+    --radius: 12px;
+    
+    /* Färgglada accenter (bevarade från förra versionen) */
+    --primary-gradient: linear-gradient(135deg, #ff416c, #ff4b2b);
+    --secondary-gradient: linear-gradient(135deg, #4facfe, #00f2fe);
+    --today-glow: 0 0 12px rgba(255, 215, 0, 0.3);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4 {
+    color: #ffffff;
+    margin-top: 0;
+}
+
+/* Knappar (Färgglada, mjuka och lekfulla) */
+button {
+    background: var(--primary-gradient);
+    color: #fff;
+    border: none;
+    border-radius: 20px; /* Rundare form */
+    padding: 0.6rem 1.4rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+button:hover {
+    transform: translateY(-2px); /* Liten studs-effekt */
+    box-shadow: 0 6px 15px rgba(255, 65, 108, 0.5);
+}
+
+button[type="button"] {
+    background: var(--bg-highlight);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    box-shadow: none;
+}
+
+button[type="button"]:hover {
+    background: #3a3a47;
+    transform: translateY(-2px);
+}
+
+/* Formulär */
+input, select {
+    padding: 0.6rem;
+    background-color: var(--bg-offset);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 0.95rem;
+    width: 100%;
+    max-width: 300px;
+    margin-top: 0.25rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #4facfe;
+    box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.3);
+}
+
+/* Header & Veckonavigering (Mjuka kort) */
+.week-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+    background: var(--bg-offset);
+    padding: 1rem;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+/* Veckogrid (Matmeny) */
+.week-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.day {
+    background: var(--bg-offset);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 1rem;
+    min-height: 110px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+
+.day:hover {
+    transform: translateY(-3px);
+}
+
+/* Färgglad topp på varje dag-kort (regnbågskänsla) */
+.day::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+}
+
+.day:nth-child(2n)::before { background: linear-gradient(90deg, #a18cd1, #fbc2eb); }
+.day:nth-child(3n)::before { background: linear-gradient(90deg, #84fab0, #8fd3f4); }
+.day:nth-child(4n)::before { background: linear-gradient(90deg, #fccb90, #d57eeb); }
+
+.day.today {
+    border: 2px solid #ffd700;
+    background: var(--bg-highlight);
+    box-shadow: var(--today-glow);
+}
+
+.day.today::before {
+    background: #ffd700;
+    height: 6px;
+}
+
+.day h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.95rem;
+}
+
+.day .date {
+    font-weight: normal;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+/* Tabeller (Schema) */
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: var(--bg-offset);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+.schedule-table th, .schedule-table td {
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    text-align: left;
+}
+
+.schedule-table th {
+    background: var(--bg-highlight);
+}
+
+.schedule-table tr.today td, .schedule-table tr.today th {
+    background: rgba(255, 215, 0, 0.05);
+    border-color: rgba(255, 215, 0, 0.4);
+}
+
+/* Listobjekt */
+.entry {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dashed var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.entry:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+/* Övrig styling */
+hr {
+    border: 0;
+    height: 1px;
+    background: var(--border-color);
+    margin: 2rem 0;
+}
+
+a {
+    color: #4facfe;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Utgiftsbalans */
+.balance {
+    background: var(--bg-offset);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #4facfe;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+details {
+    background: var(--bg-highlight);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+}
+
+summary {
+    cursor: pointer;
+    font-weight: 500;
+}

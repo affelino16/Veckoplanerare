@@ -1,0 +1,164 @@
+ <!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veckoplanerare</title>
+    <!-- Länk till vår nya stilmall -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- INLOGGNING -->
+    <section id="login-section">
+        <h1>Veckoplanerare</h1>
+        <h2>Logga in</h2>
+
+        <form id="login-form">
+            <label for="email">E-post</label><br>
+            <input type="email" id="email" placeholder="E-post" required>
+            <br><br>
+            <label for="password">Lösenord</label><br>
+            <input type="password" id="password" placeholder="Lösenord" required>
+            <br><br>
+            <button type="submit">Logga in</button>
+        </form>
+
+        <p id="login-message"></p>
+    </section>
+
+    <!-- SJÄLVA APPEN -->
+    <main id="app" hidden>
+
+        <header>
+            <h1>Veckoplanerare</h1>
+            <p id="welcome"></p>
+
+            <div class="week-bar">
+                <button id="prev-week" type="button">← Förra</button>
+                <h2 id="week-title"></h2>
+                <button id="next-week" type="button">Nästa →</button>
+                <button id="this-week" type="button">Denna vecka</button>
+            </div>
+
+            <br>
+            <button id="logout-button" type="button">Logga ut</button>
+        </header>
+
+        <hr>
+
+        <!-- SCHEMA (EN KOLUMN PER PERSON) -->
+        <section id="schedule-section">
+            <h2>Schema</h2>
+
+            <div id="schedule-list"></div>
+            <p><small>Tips: högerklicka (eller håll ned på mobilen) på något du lagt till för att ta bort det.</small></p>
+
+            <h3>Lägg till i ditt schema</h3>
+
+            <form id="schedule-form">
+                <select id="schedule-day" required>
+                    <option value="0">Måndag</option>
+                    <option value="1">Tisdag</option>
+                    <option value="2">Onsdag</option>
+                    <option value="3">Torsdag</option>
+                    <option value="4">Fredag</option>
+                    <option value="5">Lördag</option>
+                    <option value="6">Söndag</option>
+                </select>
+
+                <input type="text" id="schedule-name" placeholder="Vad händer?" required>
+                <button type="submit">Lägg till</button>
+            </form>
+        </section>
+
+        <hr>
+
+        <!-- INKÖPSLISTA -->
+        <section id="shopping-section">
+            <h2>Inköpslista</h2>
+
+            <div id="shopping-list"></div>
+
+            <h3>Lägg till vara</h3>
+
+            <form id="shopping-form">
+                <label for="shopping-name">Vad ska köpas?</label><br>
+                <input type="text" id="shopping-name" placeholder="T.ex. Mjölk" required>
+                <br><br>
+                <button type="submit">Lägg till</button>
+            </form>
+        </section>
+
+        <hr>
+
+        <!-- MATMENY -->
+        <section id="menu-section">
+            <h2>Matmeny</h2>
+
+            <div id="meal-list" class="week-grid"></div>
+
+            <h3>Lägg till maträtt</h3>
+
+            <form id="meal-form">
+                <label for="meal-day">Dag (i vald vecka)</label><br>
+                <select id="meal-day" required>
+                    <option value="0">Måndag</option>
+                    <option value="1">Tisdag</option>
+                    <option value="2">Onsdag</option>
+                    <option value="3">Torsdag</option>
+                    <option value="4">Fredag</option>
+                    <option value="5">Lördag</option>
+                    <option value="6">Söndag</option>
+                </select>
+                <br><br>
+
+                <label for="meal-name">Maträtt</label><br>
+                <input type="text" id="meal-name" placeholder="T.ex. Pasta carbonara" required>
+                <br><br>
+                <button type="submit">Lägg till</button>
+            </form>
+        </section>
+
+        <hr>
+
+        <!-- UTGIFTER -->
+        <section id="expenses-section">
+            <h2>Utgifter</h2>
+
+            <div id="balance" class="balance"></div>
+
+            <div id="expenses-list"></div>
+            <p><small>Tips: högerklicka (eller håll ned på mobilen) på en utgift du lagt till för att ta bort den.</small></p>
+
+            <h3>Lägg till utgift</h3>
+
+            <form id="expense-form">
+                <label for="expense-item">Vad köptes?</label><br>
+                <input type="text" id="expense-item" placeholder="T.ex. Middag" required>
+                <br><br>
+
+                <label for="expense-amount">Belopp</label><br>
+                <input type="number" id="expense-amount" placeholder="T.ex. 250" step="0.01" required>
+                <br><br>
+
+                <label for="expense-date">Datum</label><br>
+                <input type="date" id="expense-date" required>
+                <br><br>
+
+                <label for="expense-description">Beskrivning</label><br>
+                <input type="text" id="expense-description" placeholder="Valfri beskrivning">
+                <br><br>
+                <button type="submit">Lägg till utgift</button>
+            </form>
+        </section>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+
+</body>
+</html>
